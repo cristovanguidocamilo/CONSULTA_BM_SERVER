@@ -1,0 +1,294 @@
+unit UTipos;
+
+interface
+
+type TEstoqueBloqueado = class
+  private
+    FProduto: String;
+    FTipo: String;
+    FDataAbate: String;
+    FHabilitacao: String;
+    FQuantidade: Integer;
+
+    procedure SetProduto(const Value: String);
+    procedure SetTipo(const Value: String);
+    procedure SetDataAbate(const Value: String);
+    procedure SetHabilitacao(const Value: String);
+    procedure SetQuantidade(const Value: Integer);
+
+  published
+    property Produto: String read FProduto write SetProduto;
+    property Tipo: String read FTipo write SetTipo;
+    property DataAbate: String read FDataAbate write SetDataAbate;
+    property Habilitacao: String read FHabilitacao write SetHabilitacao;
+    property Quantidade: Integer read FQuantidade write SetQuantidade;
+
+end;
+
+type TCamaras = class
+  private
+    FCodCamara: String;
+    FHabilitacao: String;
+    FQuant: Integer;
+    FPeriodo: String;
+    FAbertura: String;
+    FFechamento: String;
+
+    procedure SetCodCamara(const Value: String);
+    procedure SetHabilitacao(const Value: String);
+    procedure SetQuant(const Value: Integer);
+    procedure SetPeriodo(const Value: String);
+    procedure SetAbertura(const Value: String);
+    procedure SetFechamento(const Value: String);
+
+  published
+    property CodCamara: String read FCodCamara write SetCodCamara;
+    property Habilitacao: String read FHabilitacao write SetHabilitacao;
+    property Quant: Integer read FQuant write SetQuant;
+    property Periodo: String read FPeriodo write SetPeriodo;
+    property Abertura: String read FAbertura write SetAbertura;
+    property Fechamento: String read FFechamento write SetFechamento;
+end;
+
+type TBalancaMapa = class
+  private
+    FSeqAbate: String;
+    FBanda: String;
+    FHabilitacao: String;
+    FNumLote: String;
+    FDataPes: String;
+    FCodMatur: String;
+    FTempo: String;
+
+    procedure SetSeqAbate(const Value: String);
+    procedure SetBanda(const Value: String);
+    procedure SetHabilitacao(const Value: String);
+    procedure SetNumLote(const Value: String);
+    procedure SetDataPes(const Value: String);
+    procedure SetCodMatur(const Value: String);
+    procedure SetTempo(const Value: String);
+
+  published
+    property SeqAbate: String read FSeqAbate write SetSeqAbate;
+    property Banda: String read FBanda write SetBanda;
+    property Habilitacao: String read FHabilitacao write SetHabilitacao;
+    property NumLote: String read FNumLote write SetNumLote;
+    property DataPes: String read FDataPes write SetDataPes;
+    property CodMatur: String read FCodMatur write SetCodMatur;
+    property Tempo: String read FTempo write SetTempo;
+end;
+
+type TCamaraDetalhe = class
+  private
+    FCodCamara: String;
+    FSeqAbate: String;
+    FBanda: String;
+    FCodTrilho: String;
+    FHabilitacao: String;
+    FNumLote: String;
+
+    procedure SetCodCamara(const Value: String);
+    procedure SetSeqAbate(const Value: String);
+    procedure SetBanda(const Value: String);
+    procedure SetCodTrilho(const Value: String);
+    procedure SetHabilitacao(const Value: String);
+    procedure SetNumLote(const Value: String);
+
+  published
+    property CodCamara: String read FCodCamara write SetCodCamara;
+    property SeqAbate: String read FSeqAbate write SetSeqAbate;
+    property Banda: String read FBanda write SetBanda;
+    property CodTrilho: String read FCodTrilho write SetCodTrilho;
+    property Habilitacao: String read FHabilitacao write SetHabilitacao;
+    property NumLote: String read FNumLote write SetNumLote;
+end;
+
+type TAcompanha = class
+  private
+    FTotal: String;
+    FAbatidos: String;
+    FRestam: String;
+
+    procedure SetTotal(const Value: String);
+    procedure SetAbatidos(const Value: String);
+    procedure SetRestam(const Value: String);
+
+  published
+    property Total: String read FTotal write SetTotal;
+    property Abatidos: String read FAbatidos write SetAbatidos;
+    property Restam: String read FRestam write SetRestam;
+end;
+
+type TQuantidadesAbate = class
+  private
+    FHabilitacao: String;
+    FQuantidade: String;
+
+    procedure SetHabilitacao(const Value: String);
+    procedure SetQuantidade(const Value: String);
+
+  published
+    property Habilitacao: String read FHabilitacao write SetHabilitacao;
+    property Quantidade: String read FQuantidade write SetQuantidade;
+end;
+
+implementation
+
+{ TEstoqueBloqueado }
+
+procedure TEstoqueBloqueado.SetDataAbate(const Value: String);
+begin
+  FDataAbate := Value;
+end;
+
+procedure TEstoqueBloqueado.SetHabilitacao(const Value: String);
+begin
+  FHabilitacao := Value;
+end;
+
+procedure TEstoqueBloqueado.SetProduto(const Value: String);
+begin
+  FProduto := Value;
+end;
+
+procedure TEstoqueBloqueado.SetQuantidade(const Value: Integer);
+begin
+  FQuantidade := Value;
+end;
+
+procedure TEstoqueBloqueado.SetTipo(const Value: String);
+begin
+  FTipo := Value;
+end;
+
+{ TCamaras }
+
+procedure TCamaras.SetAbertura(const Value: String);
+begin
+  FAbertura := Value;
+end;
+
+procedure TCamaras.SetCodCamara(const Value: String);
+begin
+  FCodCamara := Value;
+end;
+
+procedure TCamaras.SetFechamento(const Value: String);
+begin
+  FFechamento := Value;
+end;
+
+procedure TCamaras.SetHabilitacao(const Value: String);
+begin
+  FHabilitacao := Value;
+end;
+
+procedure TCamaras.SetPeriodo(const Value: String);
+begin
+  FPeriodo := Value;
+end;
+
+procedure TCamaras.SetQuant(const Value: Integer);
+begin
+  FQuant := Value;
+end;
+
+{ TBalancaMapa }
+
+procedure TBalancaMapa.SetBanda(const Value: String);
+begin
+  FBanda := Value;
+end;
+
+procedure TBalancaMapa.SetCodMatur(const Value: String);
+begin
+  FCodMatur := Value;
+end;
+
+procedure TBalancaMapa.SetDataPes(const Value: String);
+begin
+  FDataPes := Value;
+end;
+
+procedure TBalancaMapa.SetHabilitacao(const Value: String);
+begin
+  FHabilitacao := Value;
+end;
+
+procedure TBalancaMapa.SetNumLote(const Value: String);
+begin
+  FNumLote := Value;
+end;
+
+procedure TBalancaMapa.SetSeqAbate(const Value: String);
+begin
+  FSeqAbate := Value;
+end;
+
+procedure TBalancaMapa.SetTempo(const Value: String);
+begin
+  FTempo := Value;
+end;
+
+{ TCamaraDetalhe }
+
+procedure TCamaraDetalhe.SetBanda(const Value: String);
+begin
+  FBanda := Value;
+end;
+
+procedure TCamaraDetalhe.SetCodCamara(const Value: String);
+begin
+  FCodCamara := Value;
+end;
+
+procedure TCamaraDetalhe.SetCodTrilho(const Value: String);
+begin
+  FCodTrilho := Value;
+end;
+
+procedure TCamaraDetalhe.SetHabilitacao(const Value: String);
+begin
+  FHabilitacao := Value;
+end;
+
+procedure TCamaraDetalhe.SetNumLote(const Value: String);
+begin
+  FNumLote := Value;
+end;
+
+procedure TCamaraDetalhe.SetSeqAbate(const Value: String);
+begin
+  FSeqAbate := Value;
+end;
+
+{ TAcompanha }
+
+procedure TAcompanha.SetAbatidos(const Value: String);
+begin
+  Fabatidos := Value;
+end;
+
+procedure TAcompanha.SetRestam(const Value: String);
+begin
+  FRestam := Value;
+end;
+
+procedure TAcompanha.SetTotal(const Value: String);
+begin
+  FTotal := Value;
+end;
+
+{ TQuantidadesAbate }
+
+procedure TQuantidadesAbate.SetHabilitacao(const Value: String);
+begin
+  FHabilitacao := Value;
+end;
+
+procedure TQuantidadesAbate.SetQuantidade(const Value: String);
+begin
+  FQuantidade := Value;
+end;
+
+end.

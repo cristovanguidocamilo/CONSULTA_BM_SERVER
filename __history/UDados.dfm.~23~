@@ -1,0 +1,643 @@
+object DMDados: TDMDados
+  OldCreateOrder = False
+  Height = 364
+  Width = 553
+  object CONEXAO: TZConnection
+    ControlsCodePage = cCP_UTF16
+    Catalog = ''
+    Connected = True
+    HostName = 'SRVBMAIS'
+    Port = 1433
+    Database = 'Apis'
+    User = 'sa'
+    Password = '0903406'
+    Protocol = 'mssql'
+    Left = 32
+    Top = 8
+  end
+  object EstoqueBloq: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      
+        '                            --CONSULTA DE CARNE COM OSSO QUE EST' +
+        #195'O BLOQUEADOS'
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011004 - PONTA DE AGULHA DE BOI'#39' as produto, '#39'ABATE'#39' as ' +
+        'tipo, pes.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      'left join t_reserva_estoque_it res on pes.cod_pa = res.cod_barra'
+      'left join t_historico_rastr  ras1 on ras1.cod_pa = res.cod_barra'
+      'left join t_historico_rastr2 ras2 on ras2.cod_pa = res.cod_barra'
+      'left join t_historico_rastr3 ras3 on ras3.cod_pa = res.cod_barra'
+      'left join t_historico_rastr4 ras4 on ras4.cod_pa = res.cod_barra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011004'#39')'
+      'and pes.data_sai_pa is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao'
+      ''
+      'union all'
+      ''
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011010 - PONTA DE AGULHA DE VACA'#39' as produto, '#39'ABATE'#39' as' +
+        ' tipo, pes.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      'left join t_reserva_estoque_it res on pes.cod_pa = res.cod_barra'
+      'left join t_historico_rastr  ras1 on ras1.cod_pa = res.cod_barra'
+      'left join t_historico_rastr2 ras2 on ras2.cod_pa = res.cod_barra'
+      'left join t_historico_rastr3 ras3 on ras3.cod_pa = res.cod_barra'
+      'left join t_historico_rastr4 ras4 on ras4.cod_pa = res.cod_barra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011010'#39')'
+      'and pes.data_sai_pa is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao'
+      ''
+      'union all'
+      ''
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011000 - TRASEIRO DE BOI'#39' as produto, '#39'ABATE'#39' as tipo, p' +
+        'es.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      
+        'left join t_reserva_estoque_it res on pes.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr  ras1 on ras1.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr2 ras2 on ras2.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr3 ras3 on ras3.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr4 ras4 on ras4.cod_tras = res.cod_bar' +
+        'ra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011000'#39')'
+      'and pes.data_sai_tras is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao'
+      ''
+      'union all'
+      ''
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011016 - TRASEIRO DE VACA'#39' as produto, '#39'ABATE'#39' as tipo, ' +
+        'pes.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      
+        'left join t_reserva_estoque_it res on pes.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr  ras1 on ras1.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr2 ras2 on ras2.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr3 ras3 on ras3.cod_tras = res.cod_bar' +
+        'ra'
+      
+        'left join t_historico_rastr4 ras4 on ras4.cod_tras = res.cod_bar' +
+        'ra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011016'#39')'
+      'and pes.data_sai_tras is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao'
+      ''
+      'union all'
+      ''
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011001 - DIANTEIRO DE BOI'#39' as produto, '#39'ABATE'#39' as tipo, ' +
+        'pes.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      
+        'left join t_reserva_estoque_it res on pes.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr  ras1 on ras1.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr2 ras2 on ras2.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr3 ras3 on ras3.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr4 ras4 on ras4.cod_diant = res.cod_ba' +
+        'rra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011001'#39')'
+      'and pes.data_sai_diant is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao'
+      ''
+      'union all'
+      ''
+      'select *, count(1) as quant from ('
+      
+        'select '#39'011017 - DIANTEIRO DE VACA'#39' as produto, '#39'ABATE'#39' as tipo,' +
+        ' pes.data_abate,'
+      
+        'concat(rtrim(isnull(ras1.class_rastr, pes.class_rastr)), case wh' +
+        'en (isnull(ras2.class_rastr2, pes.class_rastr2)) <> '#39#39' then conc' +
+        'at('#39'-'#39', rtrim(isnull(ras2.class_rastr2, pes.class_rastr2))) end,' +
+        ' case when (isnull(ras3.class_rastr3, pes.class_rastr3)) <> '#39#39' t' +
+        'hen concat('#39'-'#39', rtrim(isnull(ras3.class_rastr3, pes.class_rastr3' +
+        '))) end, case when (isnull(ras4.class_rastr4, pes.class_rastr4))' +
+        ' <> '#39#39' then concat('#39'-'#39', rtrim(isnull(ras4.class_rastr4, pes.clas' +
+        's_rastr4))) end) as habilitacao'
+      'from t_pescarcaca pes'
+      
+        'left join t_reserva_estoque_it res on pes.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr  ras1 on ras1.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr2 ras2 on ras2.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr3 ras3 on ras3.cod_diant = res.cod_ba' +
+        'rra'
+      
+        'left join t_historico_rastr4 ras4 on ras4.cod_diant = res.cod_ba' +
+        'rra'
+      'where res.situacao = 1 and res.cod_prod in ('#39'011017'#39')'
+      'and pes.data_sai_diant is null'
+      ') t'
+      'group by t.produto, t.tipo, t.data_abate, t.habilitacao')
+    Params = <>
+    Left = 32
+    Top = 56
+    object EstoqueBloqproduto: TWideStringField
+      FieldName = 'produto'
+      ReadOnly = True
+      Size = 32
+    end
+    object EstoqueBloqtipo: TWideStringField
+      FieldName = 'tipo'
+      ReadOnly = True
+      Size = 5
+    end
+    object EstoqueBloqdata_abate: TDateTimeField
+      FieldName = 'data_abate'
+      ReadOnly = True
+    end
+    object EstoqueBloqhabilitacao: TWideStringField
+      FieldName = 'habilitacao'
+      ReadOnly = True
+      Size = 23
+    end
+    object EstoqueBloqquant: TIntegerField
+      FieldName = 'quant'
+      ReadOnly = True
+    end
+  end
+  object Camaras: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      'select t.cod_camara,'
+      
+        '       case when (substring(t.rastr,len(t.rastr),1)) = '#39'-'#39' then ' +
+        'substring(t.rastr, 1, len(t.rastr)-1) else t.rastr end as rastr,'
+      '       t.quant,'
+      '       t.periodo'
+      '  from ('
+      'select pes.cod_camara,'
+      
+        '       replace(concat(rtrim(pes.class_rastr), rtrim('#39'-'#39'+pes.clas' +
+        's_rastr2), rtrim('#39'-'#39'+pes.class_rastr3), rtrim('#39'-'#39'+pes.class_rast' +
+        'r4), rtrim('#39'-'#39'+pes.class_rastr5), rtrim('#39'-'#39'+pes.class_rastr6)),'#39 +
+        '--'#39','#39#39') as rastr,'
+      #9'     count (1)/2 as quant,'
+      
+        '       periodo = Concat((select top 1 Convert(Char(8),cast(abert' +
+        'uramin as time),108) from dbo.F_INFO_CAMARA_PROC(min(mapa.data_e' +
+        'nt),pes.cod_camara)), '#39' - '#39',(select top 1 Convert(Char(8),cast(f' +
+        'echamentomax as time),108) from dbo.F_INFO_CAMARA_PROC(max(mapa.' +
+        'data_ent),pes.cod_camara)))'
+      '  from t_pescarcaca pes with(nolock)'
+      
+        ' inner join t_mapa_camaras_abate mapa on mapa.cod_carcaca = pes.' +
+        'cod_tras'
+      ' where pes.data_abate = @data'
+      '   and cast(mapa.data_ent as date) = @data'
+      '   and pes.class_rastr not in ('#39'DIF'#39')'
+      '   and pes.cod_camara <> '#39#39
+      
+        ' group by pes.cod_camara, replace(concat(rtrim(pes.class_rastr),' +
+        ' rtrim('#39'-'#39'+pes.class_rastr2), rtrim('#39'-'#39'+pes.class_rastr3), rtrim' +
+        '('#39'-'#39'+pes.class_rastr4), rtrim('#39'-'#39'+pes.class_rastr5), rtrim('#39'-'#39'+p' +
+        'es.class_rastr6)),'#39'--'#39','#39#39')'
+      ' )t'
+      ' order by t.cod_camara, t.rastr')
+    Params = <>
+    Left = 32
+    Top = 104
+    object Camarascod_camara: TWideStringField
+      FieldName = 'cod_camara'
+      ReadOnly = True
+      Size = 3
+    end
+    object Camarasrastr: TWideStringField
+      FieldName = 'rastr'
+      ReadOnly = True
+      Size = 255
+    end
+    object Camarasquant: TIntegerField
+      FieldName = 'quant'
+      ReadOnly = True
+    end
+    object Camarasperiodo: TWideStringField
+      FieldName = 'periodo'
+      ReadOnly = True
+      Size = 19
+    end
+  end
+  object CamarasDetalhe: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      'select t.cod_camara,'
+      '       t.seq_abate,'
+      #9'   t.banda,'
+      '       t.cod_trilho,'
+      
+        '       case when (substring(t.rastr,len(t.rastr),1)) = '#39'-'#39' then ' +
+        'substring(t.rastr, 1, len(t.rastr)-1) else t.rastr end as rastr,'
+      '       t.num_lote'
+      '  from ('
+      'select pes.cod_camara,'
+      '       pes.seq_abate,'
+      #9'   pes.banda,'
+      #9'   cam.cod_trilho,'
+      
+        '  '#9'   replace(concat(rtrim(pes.class_rastr), rtrim('#39'-'#39'+pes.class' +
+        '_rastr2), rtrim('#39'-'#39'+pes.class_rastr3), rtrim('#39'-'#39'+pes.class_rastr' +
+        '4), rtrim('#39'-'#39'+pes.class_rastr5), rtrim('#39'-'#39'+pes.class_rastr6)),'#39'-' +
+        '-'#39','#39#39') as rastr,'
+      '       pes.num_lote'
+      '  from t_mapa_camaras_abate cam'
+      
+        ' inner join t_pescarcaca pes on cam.data_mapa = pes.data_abate a' +
+        'nd cam.cod_carcaca = pes.cod_tras'
+      ' where cam.data_mapa = @data'
+      '   and cam.cod_camara = :cod_camara'
+      ' )t'
+      ' order by t.seq_abate desc'
+      '')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'cod_camara'
+        ParamType = ptUnknown
+      end>
+    Left = 32
+    Top = 152
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'cod_camara'
+        ParamType = ptUnknown
+      end>
+    object CamarasDetalhecod_camara: TWideStringField
+      FieldName = 'cod_camara'
+      ReadOnly = True
+      Size = 3
+    end
+    object CamarasDetalheseq_abate: TIntegerField
+      FieldName = 'seq_abate'
+      ReadOnly = True
+    end
+    object CamarasDetalhebanda: TWideStringField
+      FieldName = 'banda'
+      ReadOnly = True
+      Size = 1
+    end
+    object CamarasDetalhecod_trilho: TWideStringField
+      FieldName = 'cod_trilho'
+      ReadOnly = True
+      Size = 4
+    end
+    object CamarasDetalherastr: TWideStringField
+      FieldName = 'rastr'
+      ReadOnly = True
+      Size = 255
+    end
+    object CamarasDetalhenum_lote: TWideStringField
+      FieldName = 'num_lote'
+      ReadOnly = True
+      Size = 2
+    end
+  end
+  object BalancaMapa: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      'declare @data_sistema datetime = getdate()'
+      ''
+      'select t.seq_abate,'
+      '       t.banda,'
+      
+        #9'     case when (substring(t.rastr,len(t.rastr),1)) = '#39'-'#39' then s' +
+        'ubstring(t.rastr, 1, len(t.rastr)-1) else t.rastr end as rastr,'
+      #9'     t.num_lote,'
+      #9'     t.data_pes,'
+      '       t.cod_matur,'
+      
+        '  '#9'   case when datediff(minute, data_pes, @data_sistema) < 5 th' +
+        'en 0 when datediff(minute, data_pes, @data_sistema) >= 5 and dat' +
+        'ediff(minute, data_pes, @data_sistema) < 10 then 5 when datediff' +
+        '(minute, data_pes, @data_sistema) >= 10 then 10 end as tempo'
+      '  from ('
+      'select seq_abate,'
+      '       banda,'
+      
+        #9'     replace(concat(rtrim(class_rastr), rtrim('#39'-'#39'+class_rastr2)' +
+        ', rtrim('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim('#39'-'#39'+cl' +
+        'ass_rastr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39') as rastr,'
+      '       num_lote,'
+      '       data_pes,'
+      '       cod_matur'
+      '  from t_pescarcaca with(nolock)'
+      ' where data_abate = @data'
+      '   and status not in ('#39'O'#39','#39'G'#39','#39'T'#39')'
+      '   and cod_camara = '#39#39
+      '   )t'
+      ' order by t.data_pes')
+    Params = <>
+    Left = 32
+    Top = 200
+    object BalancaMapaseq_abate: TIntegerField
+      FieldName = 'seq_abate'
+      ReadOnly = True
+    end
+    object BalancaMapabanda: TWideStringField
+      FieldName = 'banda'
+      ReadOnly = True
+      Size = 1
+    end
+    object BalancaMaparastr: TWideStringField
+      FieldName = 'rastr'
+      ReadOnly = True
+      Size = 255
+    end
+    object BalancaMapanum_lote: TWideStringField
+      FieldName = 'num_lote'
+      ReadOnly = True
+      Size = 2
+    end
+    object BalancaMapadata_pes: TDateTimeField
+      FieldName = 'data_pes'
+      ReadOnly = True
+    end
+    object BalancaMapacod_matur: TWideStringField
+      FieldName = 'cod_matur'
+      ReadOnly = True
+      Size = 1
+    end
+    object BalancaMapatempo: TIntegerField
+      FieldName = 'tempo'
+      ReadOnly = True
+    end
+  end
+  object Acompanha: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      'select isnull((t.qtdlote - t.qtdabate),0) as restam,'
+      '       isnull(t.qtdlote, 0) as qtdlote,'
+      #9'     t.qtdabate'
+      '  from (select (select sum(quant_lote)'
+      #9#9'              from t_pedprogit with (nolock)'
+      '                 where cast(data_abate as DATE) = @data )'
+      #9#9'           qtdlote,'
+      #9'             convert(numeric (8,1),count(*))/2 qtdabate,'
+      #9#9#9'         sum (peso) peso_abate'
+      #9#9'      from t_pescarcaca pes with (nolock)'
+      '         where cast(data_abate as DATE) = @data ) t')
+    Params = <>
+    Left = 32
+    Top = 248
+    object Acompanharestam: TFloatField
+      FieldName = 'restam'
+      ReadOnly = True
+    end
+    object Acompanhaqtdlote: TFloatField
+      FieldName = 'qtdlote'
+      ReadOnly = True
+    end
+    object Acompanhaqtdabate: TFloatField
+      FieldName = 'qtdabate'
+      ReadOnly = True
+    end
+  end
+  object QuantidadesAbate: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      
+        'select case when (substring(t.rastr,len(t.rastr),1)) = '#39'-'#39' then ' +
+        'substring(t.rastr, 1, len(t.rastr)-1) else t.rastr end as rastr,'
+      '       t.quant'
+      '  from ('
+      
+        'select replace(concat(rtrim(case when class_rastr = '#39'DIF'#39' and st' +
+        'atus = '#39'T'#39' then '#39'T.F.'#39' when class_rastr = '#39'DIF'#39' and status = '#39'O'#39 +
+        ' then '#39'CONSERVA'#39' when class_rastr = '#39'DIF'#39' and status = '#39'G'#39' then ' +
+        #39'GRAXARIA'#39' else class_rastr end), rtrim('#39'-'#39'+class_rastr2), rtrim' +
+        '('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim('#39'-'#39'+class_ras' +
+        'tr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39') as rastr,'
+      '       count(1)/2 as quant'
+      '  from t_pescarcaca'
+      ' where data_abate = @data'
+      
+        ' group by replace(concat(rtrim(case when class_rastr = '#39'DIF'#39' and' +
+        ' status = '#39'T'#39' then '#39'T.F.'#39' when class_rastr = '#39'DIF'#39' and status = ' +
+        #39'O'#39' then '#39'CONSERVA'#39' when class_rastr = '#39'DIF'#39' and status = '#39'G'#39' th' +
+        'en '#39'GRAXARIA'#39' else class_rastr end), rtrim('#39'-'#39'+class_rastr2), rt' +
+        'rim('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim('#39'-'#39'+class_' +
+        'rastr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39')'
+      ' )t'
+      ' order by t.rastr'
+      '')
+    Params = <>
+    Left = 32
+    Top = 296
+    object QuantidadesAbaterastr: TWideStringField
+      FieldName = 'rastr'
+      ReadOnly = True
+      Size = 255
+    end
+    object QuantidadesAbatequant: TIntegerField
+      FieldName = 'quant'
+      ReadOnly = True
+    end
+  end
+  object QuantidadesLote: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      
+        'select t.num_lote, case when (substring(t.rastr,len(t.rastr),1))' +
+        ' = '#39'-'#39' then substring(t.rastr, 1, len(t.rastr)-1) else t.rastr e' +
+        'nd as rastr, t.quant from ('
+      'select num_lote,'
+      
+        '       replace(concat(rtrim(case when class_rastr = '#39'DIF'#39' and st' +
+        'atus = '#39'T'#39' then '#39'T.F.'#39' when class_rastr = '#39'DIF'#39' and status = '#39'O'#39 +
+        ' then '#39'CONSERVA'#39' when class_rastr = '#39'DIF'#39' and status = '#39'G'#39' then ' +
+        #39'GRAXARIA'#39' else class_rastr end), rtrim('#39'-'#39'+class_rastr2), rtrim' +
+        '('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim('#39'-'#39'+class_ras' +
+        'tr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39') as rastr,'
+      '       count(1)/2 as quant'
+      '  from t_pescarcaca'
+      ' where data_abate = @data'
+      
+        ' group by num_lote, replace(concat(rtrim(case when class_rastr =' +
+        ' '#39'DIF'#39' and status = '#39'T'#39' then '#39'T.F.'#39' when class_rastr = '#39'DIF'#39' and' +
+        ' status = '#39'O'#39' then '#39'CONSERVA'#39' when class_rastr = '#39'DIF'#39' and statu' +
+        's = '#39'G'#39' then '#39'GRAXARIA'#39' else class_rastr end), rtrim('#39'-'#39'+class_r' +
+        'astr2), rtrim('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim(' +
+        #39'-'#39'+class_rastr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39')'
+      ' )t'
+      ' order by t.num_lote')
+    Params = <>
+    Left = 128
+    Top = 8
+    object QuantidadesLotenum_lote: TWideStringField
+      FieldName = 'num_lote'
+      ReadOnly = True
+      Size = 2
+    end
+    object QuantidadesLoterastr: TWideStringField
+      FieldName = 'rastr'
+      ReadOnly = True
+      Size = 255
+    end
+    object QuantidadesLotequant: TIntegerField
+      FieldName = 'quant'
+      ReadOnly = True
+    end
+  end
+  object EscalaAbate: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @data datetime = cast(getdate() as date)'
+      ''
+      'select prog.lote,'
+      '       prog.seq_lote,'
+      #9'     prog.quant_lote,'
+      #9'     prog.currais,'
+      #9'     emp.nome,'
+      #9'     faz.nome_fazenda,'
+      
+        '       case when prog.quant_abatido > 0 and prog.quant_abatido <' +
+        ' prog.quant_lote then '#39'1'#39' when prog.quant_abatido = 0 then '#39'0'#39' w' +
+        'hen prog.quant_abatido = prog.quant_lote then '#39'2'#39' end as status_' +
+        'lote,'
+      
+        #9'     rtrim(prog.class_rastr) + '#39'/'#39' + prog.subtipos_relatorio as' +
+        ' habilitacao'
+      '  from t_pedprogit prog'
+      ' inner join t_pedcompbov ped on ped.cod_pedcom = prog.cod_pedcom'
+      ' inner join t_fazenda faz on faz.cod_faz = ped.cod_faz'
+      ' inner join t_empresa emp on emp.cod_emp = ped.cod_emp'
+      ' where prog.data_abate = @data'
+      ' order by lote, seq_lote')
+    Params = <>
+    Left = 128
+    Top = 64
+    object EscalaAbatelote: TWideStringField
+      FieldName = 'lote'
+      Required = True
+      Size = 2
+    end
+    object EscalaAbateseq_lote: TWideStringField
+      FieldName = 'seq_lote'
+      Required = True
+      Size = 1
+    end
+    object EscalaAbatequant_lote: TFloatField
+      FieldName = 'quant_lote'
+    end
+    object EscalaAbatecurrais: TWideStringField
+      FieldName = 'currais'
+      Size = 100
+    end
+    object EscalaAbatenome: TWideStringField
+      FieldName = 'nome'
+      Required = True
+      Size = 50
+    end
+    object EscalaAbatenome_fazenda: TWideStringField
+      FieldName = 'nome_fazenda'
+      Required = True
+      Size = 40
+    end
+    object EscalaAbatestatus_lote: TWideStringField
+      FieldName = 'status_lote'
+      ReadOnly = True
+      Size = 1
+    end
+    object EscalaAbatehabilitacao: TWideStringField
+      FieldName = 'habilitacao'
+      ReadOnly = True
+      Size = 59
+    end
+  end
+end
