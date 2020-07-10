@@ -3,13 +3,18 @@ unit untSM_BM;
 interface
 
 uses System.SysUtils, System.Classes, System.Json,
-    Datasnap.DSServer, Datasnap.DSAuth, UTipos, Dialogs;
+    Datasnap.DSServer, Datasnap.DSAuth, UTipos, Dialogs, System.NetEncoding;
 
 type
 {$METHODINFO ON}
   TSM_BM = class(TDataModule)
   private
     { Private declarations }
+    function Criptografa(texto: String):String;
+    function Decriptografa(texto: String): String;
+    function CalculaCnpjCpf(Numero : String) : Boolean;
+    function ApenasNumerosStr(pStr:String): String;
+    function IIf(pCond:Boolean;pTrue,pFalse:Variant): Variant;
   public
     { Public declarations }
     function EstoqueBloqueado: TJSONArray;
@@ -20,6 +25,9 @@ type
     function QuantidadesAbate: TJSONArray;
     function QuantidadesLote(num_lote: String): TJSONArray;
     function EscalaAbate: TJSONArray;
+    function ValidaUsuario(usuario, senha: String):TJSONArray;
+    function CadastraUsuario(usuario, senha, cpf_cnpj: String):TJSONArray;
+    function AbatesPecuarista(cgc: String): TJSONArray;
   end;
 {$METHODINFO OFF}
 
@@ -32,6 +40,49 @@ uses UDados;
 
 
 { TSM_BM }
+
+function TSM_BM.AbatesPecuarista(cgc: String): TJSONArray;
+Var
+  Dados: TDMDados;
+  JsonArray: TJSONArray;
+  JObj: TJSONObject;
+begin
+  try
+    Dados := TDMDados.Create(nil);
+
+    try
+      if(Dados.CONEXAO.Connected = false) then
+        Dados.CONEXAO.Connected := True;
+      Dados.AbatesPecuarista.Active := False;
+      Dados.AbatesPecuarista.ParamByName('cgc').AsString := Decriptografa(cgc);
+      Dados.AbatesPecuarista.Active := True;
+    finally
+
+    end;
+
+    JsonArray := TJSONArray.Create;
+
+    Dados.AbatesPecuarista.First;
+    while not Dados.AbatesPecuarista.Eof do
+    begin
+      JObj := TJSONObject.Create;
+      JObj.AddPair('dataAbate',Dados.AbatesPecuaristadata_abate.AsString);
+      JObj.AddPair('nome',Dados.AbatesPecuaristanome.AsString);
+      JObj.AddPair('quant',Dados.AbatesPecuaristaquant.AsString);
+      JsonArray.Add(JObj);
+      Dados.AbatesPecuarista.Next;
+    end;
+
+    Result := JsonArray;
+
+    Dados.AbatesPecuarista.Active := False;
+    Dados.CONEXAO.Connected := False;
+
+  finally
+    if Assigned(Dados) then
+      FreeAndNil(Dados);
+  end;
+end;
 
 function TSM_BM.Acompanha: TJSONArray;
 Var
@@ -52,9 +103,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.Acompanha.First;
     while not Dados.Acompanha.Eof do
@@ -78,6 +126,16 @@ begin
   end;
 end;
 
+function TSM_BM.ApenasNumerosStr(pStr: String): String;
+Var
+  I: Integer;
+begin
+  Result := '';
+  For I := 1 To Length(pStr) do
+   If pStr[I] In ['1','2','3','4','5','6','7','8','9','0'] Then
+     Result := Result + pStr[I];
+end;
+
 function TSM_BM.BalancaMapa: TJSONArray;
 Var
   Dados: TDMDados;
@@ -97,9 +155,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.BalancaMapa.First;
     while not Dados.BalancaMapa.Eof do
@@ -127,6 +182,114 @@ begin
   end;
 end;
 
+function TSM_BM.CadastraUsuario(usuario, senha, cpf_cnpj: String): TJSONArray;
+Var
+  Dados: TDMDados;
+  JsonArray: TJSONArray;
+  JObj: TJSONObject;
+  CodRetorno: String;
+begin
+  try
+    Dados := TDMDados.Create(nil);
+
+    cpf_cnpj := Decriptografa(cpf_cnpj);
+    usuario := Decriptografa(usuario);
+
+    try
+      if(Dados.CONEXAO.Connected = false) then
+        Dados.CONEXAO.Connected := True;
+
+      //SE CPF OU CNPJ VALIDO
+      if(CalculaCnpjCpf(cpf_cnpj)) then
+      begin
+        //VERIFICO SE USUARIO JA ESTA CADASTRADO
+        Dados.qryExecuta.SQL.Clear;
+        Dados.qryExecuta.SQL.Add('select count(1) as quant from bm_usuario_app where usuario = ''' + usuario + '''');
+        Dados.qryExecuta.Active := True;
+        //SE NÃO EXISTIR OUTRO USUARIO COM O MESMO NOME
+        if(Dados.qryExecuta.FieldByName('quant').AsInteger  = 0) then
+        begin
+          //GRAVO OS DADOS NO BANCO
+          Dados.qryExecuta.Active := False;
+          Dados.qryExecuta.SQL.Clear;
+          Dados.qryExecuta.SQL.Add('insert into bm_usuario_app (cpf_cnpj, usuario, senha) values (:cpf_cnpj, :usuario, :senha);');
+          Dados.qryExecuta.ParamByName('cpf_cnpj').AsString := cpf_cnpj;
+          Dados.qryExecuta.ParamByName('usuario').AsString := usuario;
+          Dados.qryExecuta.ParamByName('senha').AsString := senha;
+          Dados.qryExecuta.ExecSQL;
+
+          //VALIDO OS DADOS GRAVADOS
+          Dados.qryExecuta.SQL.Clear;
+          Dados.qryExecuta.SQL.Add('select count(1) as quant from bm_usuario_app where usuario = ''' + usuario + '''');
+          Dados.qryExecuta.Active := True;
+          if(Dados.qryExecuta.FieldByName('quant').AsInteger  = 0) then
+            CodRetorno := 'RET003' //ERRO AO CADASTRAR USUARIO
+          else
+            CodRetorno := 'RET000'; //SUCESSO AO CADASTRAR
+          Dados.qryExecuta.Active := False;
+        end
+        else
+          CodRetorno := 'RET002';  //USUARIO JA CADASTRADO
+      end
+      else
+        CodRetorno := 'RET001';  //CPF OU CNPJ inválido
+    finally
+
+    end;
+
+    JsonArray := TJSONArray.Create;
+    JObj := TJSONObject.Create;
+    JObj.AddPair('result',CodRetorno);
+    JsonArray.Add(JObj);
+
+    Result := JsonArray;
+
+    Dados.CONEXAO.Connected := False;
+
+  finally
+    if Assigned(Dados) then
+      FreeAndNil(Dados);
+  end;
+end;
+
+function TSM_BM.CalculaCnpjCpf(Numero: String): Boolean;
+Var
+  i,d,b,Digito : Byte;
+  Soma : Integer;
+  CNPJ : Boolean;
+  DgPass,DgCalc : String;
+begin
+  Result := False;
+  Numero := ApenasNumerosStr(Numero);
+  // Caso o número não seja 11 (CPF) ou 14 (CNPJ), aborta
+  Case Length(Numero) of
+    11: CNPJ := False;
+    14: CNPJ := True;
+  else Exit;
+  end;
+  // Separa o número do digito
+  DgCalc := '';
+  DgPass := Copy(Numero,Length(Numero)-1,2);
+  Numero := Copy(Numero,1,Length(Numero)-2);
+  // Calcula o digito 1 e 2
+  For d := 1 to 2 do begin
+    B := IIF(D=1,2,3); // BYTE
+    SOMA := IIF(D=1,0,STRTOINTDEF(DGCALC,0)*2);
+    for i := Length(Numero) downto 1 do begin
+      Soma := Soma + (Ord(Numero[I])-Ord('0'))*b;
+      Inc(b);
+      If (b > 9) And CNPJ Then
+        b := 2;
+    end;
+   Digito := 11 - Soma mod 11;
+   If Digito >= 10 then
+     Digito := 0;
+   DgCalc := DgCalc + Chr(Digito + Ord('0'));
+  end;
+  Result := DgCalc = DgPass;
+end;
+
+
 function TSM_BM.Camaras: TJSONArray;
 Var
   Dados: TDMDados;
@@ -146,9 +309,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.Camaras.First;
     while not Dados.Camaras.Eof do
@@ -193,9 +353,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.CamarasDetalhe.First;
     while not Dados.CamarasDetalhe.Eof do
@@ -223,6 +380,16 @@ begin
 
 end;
 
+function TSM_BM.Criptografa(texto: String): String;
+begin
+    Result := TNetEncoding.Base64.Encode(texto);
+end;
+
+function TSM_BM.Decriptografa(texto: String): String;
+begin
+  Result := TNetEncoding.Base64.Decode(texto);
+end;
+
 function TSM_BM.EscalaAbate: TJSONArray;
 Var
   Dados: TDMDados;
@@ -242,9 +409,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.EscalaAbate.First;
     while not Dados.EscalaAbate.Eof do
@@ -293,9 +457,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.EstoqueBloq.First;
     while not Dados.EstoqueBloq.Eof do
@@ -322,6 +483,14 @@ begin
 
 end;
 
+function TSM_BM.IIf(pCond: Boolean; pTrue, pFalse: Variant): Variant;
+begin
+  If pCond Then
+    Result := pTrue
+  else
+    Result := pFalse;
+end;
+
 function TSM_BM.QuantidadesAbate: TJSONArray;
 Var
   Dados: TDMDados;
@@ -341,9 +510,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.QuantidadesAbate.First;
     while not Dados.QuantidadesAbate.Eof do
@@ -388,9 +554,6 @@ begin
     end;
 
     JsonArray := TJSONArray.Create;
-    JObj := TJSONObject.Create;
-
-
 
     Dados.QuantidadesLote.First;
     while not Dados.QuantidadesLote.Eof do
@@ -406,6 +569,65 @@ begin
     Result := JsonArray;
 
     Dados.QuantidadesLote.Active := False;
+    Dados.CONEXAO.Connected := False;
+
+  finally
+    if Assigned(Dados) then
+      FreeAndNil(Dados);
+  end;
+end;
+
+function TSM_BM.ValidaUsuario(usuario, senha: String): TJSONArray;
+Var
+  Dados: TDMDados;
+  JsonArray: TJSONArray;
+  JObj: TJSONObject;
+  CodRetorno: String;
+  CGC: String;
+  Tipo: String;
+begin
+   try
+    Dados := TDMDados.Create(nil);
+
+    usuario := Decriptografa(usuario);
+    CGC := '';
+    Tipo := 2;
+
+    try
+      if(Dados.CONEXAO.Connected = false) then
+        Dados.CONEXAO.Connected := True;
+      Dados.qryExecuta.SQL.Clear;
+      Dados.qryExecuta.SQL.Add('select usuario, senha, cpf_cnpj, count(1) as quant from bm_usuario_app where usuario = ''' + usuario + ''' group by usuario, senha, cpf_cnpj');
+      Dados.qryExecuta.Active := True;
+      if(Dados.qryExecuta.FieldByName('quant').AsInteger > 0) then
+      begin
+        if(Dados.qryExecuta.FieldByName('senha').AsString = senha) then
+        begin
+          CodRetorno := 'RET000'; //LOGIN E SENHA CORRETOS
+          CGC := Dados.qryExecuta.FieldByName('cpf_cnpj').AsString;
+        end
+        else
+        begin
+          CodRetorno := 'RET002'; //LOGIN E SENHA INCORRETOS
+        end
+      end
+      else
+        CodRetorno := 'RET001'; //USUARIO NAO ENCONTRADO
+      Dados.qryExecuta.Active := False;
+
+    finally
+
+    end;
+
+    JsonArray := TJSONArray.Create;
+    JObj := TJSONObject.Create;
+    JObj.AddPair('result',CodRetorno);
+    JObj.AddPair('cgc',CGC);
+    JObj.AddPair('tipo',Tipo); //1-adm / 2-pecuarista / 3-assessoria de abate
+    JsonArray.Add(JObj);
+
+    Result := JsonArray;
+
     Dados.CONEXAO.Connected := False;
 
   finally

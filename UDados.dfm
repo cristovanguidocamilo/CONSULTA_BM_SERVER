@@ -5,6 +5,7 @@ object DMDados: TDMDados
   object CONEXAO: TZConnection
     ControlsCodePage = cCP_UTF16
     Catalog = ''
+    Connected = True
     HostName = 'SRVBMAIS'
     Port = 1433
     Database = 'Apis'
@@ -676,5 +677,51 @@ object DMDados: TDMDados
     Params = <>
     Left = 504
     Top = 8
+  end
+  object AbatesPecuarista: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @cgc varchar(20) = :cgc'
+      ''
+      'select prog.data_abate,'
+      '       emp.nome,'
+      '       sum(prog.quant_lote) as quant'
+      '  from t_pedprogit prog with (nolock)'
+      
+        ' inner join t_pedcompbov ped with (nolock) on ped.cod_pedcom = p' +
+        'rog.cod_pedcom'
+      
+        ' inner join t_empresa emp with (nolock) on emp.cod_emp = ped.cod' +
+        '_emp'
+      ' where emp.cgc = @cgc'
+      '   and prog.data_abate >= (getdate() - 30)'
+      ' group by prog.data_abate, emp.nome'
+      ' order by prog.data_abate desc')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'cgc'
+        ParamType = ptUnknown
+      end>
+    Left = 128
+    Top = 128
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'cgc'
+        ParamType = ptUnknown
+      end>
+    object AbatesPecuaristadata_abate: TDateTimeField
+      FieldName = 'data_abate'
+    end
+    object AbatesPecuaristanome: TWideStringField
+      FieldName = 'nome'
+      Required = True
+      Size = 50
+    end
+    object AbatesPecuaristaquant: TFloatField
+      FieldName = 'quant'
+      ReadOnly = True
+    end
   end
 end

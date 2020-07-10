@@ -57,6 +57,10 @@ type
     EscalaAbatestatus_lote: TWideStringField;
     EscalaAbatebrincado: TWideStringField;
     qryExecuta: TZQuery;
+    AbatesPecuarista: TZQuery;
+    AbatesPecuaristadata_abate: TDateTimeField;
+    AbatesPecuaristaquant: TFloatField;
+    AbatesPecuaristanome: TWideStringField;
   private
     { Private declarations }
   public

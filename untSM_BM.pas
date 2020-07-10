@@ -27,6 +27,7 @@ type
     function EscalaAbate: TJSONArray;
     function ValidaUsuario(usuario, senha: String):TJSONArray;
     function CadastraUsuario(usuario, senha, cpf_cnpj: String):TJSONArray;
+    function AbatesPecuarista(cgc: String): TJSONArray;
   end;
 {$METHODINFO OFF}
 
@@ -39,6 +40,49 @@ uses UDados;
 
 
 { TSM_BM }
+
+function TSM_BM.AbatesPecuarista(cgc: String): TJSONArray;
+Var
+  Dados: TDMDados;
+  JsonArray: TJSONArray;
+  JObj: TJSONObject;
+begin
+  try
+    Dados := TDMDados.Create(nil);
+
+    try
+      if(Dados.CONEXAO.Connected = false) then
+        Dados.CONEXAO.Connected := True;
+      Dados.AbatesPecuarista.Active := False;
+      Dados.AbatesPecuarista.ParamByName('cgc').AsString := Decriptografa(cgc);
+      Dados.AbatesPecuarista.Active := True;
+    finally
+
+    end;
+
+    JsonArray := TJSONArray.Create;
+
+    Dados.AbatesPecuarista.First;
+    while not Dados.AbatesPecuarista.Eof do
+    begin
+      JObj := TJSONObject.Create;
+      JObj.AddPair('dataAbate',Dados.AbatesPecuaristadata_abate.AsString);
+      JObj.AddPair('nome',Dados.AbatesPecuaristanome.AsString);
+      JObj.AddPair('quant',Dados.AbatesPecuaristaquant.AsString);
+      JsonArray.Add(JObj);
+      Dados.AbatesPecuarista.Next;
+    end;
+
+    Result := JsonArray;
+
+    Dados.AbatesPecuarista.Active := False;
+    Dados.CONEXAO.Connected := False;
+
+  finally
+    if Assigned(Dados) then
+      FreeAndNil(Dados);
+  end;
+end;
 
 function TSM_BM.Acompanha: TJSONArray;
 Var
@@ -539,24 +583,33 @@ Var
   JsonArray: TJSONArray;
   JObj: TJSONObject;
   CodRetorno: String;
+  CGC: String;
+  Tipo: String;
 begin
    try
     Dados := TDMDados.Create(nil);
 
     usuario := Decriptografa(usuario);
+    CGC := '';
+    Tipo := '2';
 
     try
       if(Dados.CONEXAO.Connected = false) then
         Dados.CONEXAO.Connected := True;
       Dados.qryExecuta.SQL.Clear;
-      Dados.qryExecuta.SQL.Add('select usuario, senha, count(1) as quant from bm_usuario_app where usuario = ''' + usuario + ''' group by usuario, senha');
+      Dados.qryExecuta.SQL.Add('select usuario, senha, cpf_cnpj, count(1) as quant from bm_usuario_app where usuario = ''' + usuario + ''' group by usuario, senha, cpf_cnpj');
       Dados.qryExecuta.Active := True;
       if(Dados.qryExecuta.FieldByName('quant').AsInteger > 0) then
       begin
         if(Dados.qryExecuta.FieldByName('senha').AsString = senha) then
-          CodRetorno := 'RET000' //LOGIN E SENHA CORRETOS
+        begin
+          CodRetorno := 'RET000'; //LOGIN E SENHA CORRETOS
+          CGC := Dados.qryExecuta.FieldByName('cpf_cnpj').AsString;
+        end
         else
+        begin
           CodRetorno := 'RET002'; //LOGIN E SENHA INCORRETOS
+        end
       end
       else
         CodRetorno := 'RET001'; //USUARIO NAO ENCONTRADO
@@ -569,6 +622,8 @@ begin
     JsonArray := TJSONArray.Create;
     JObj := TJSONObject.Create;
     JObj.AddPair('result',CodRetorno);
+    JObj.AddPair('cgc',CGC);
+    JObj.AddPair('tipo',Tipo); //1-adm / 2-pecuarista / 3-assessoria de abate
     JsonArray.Add(JObj);
 
     Result := JsonArray;

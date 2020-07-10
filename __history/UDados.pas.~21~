@@ -34,6 +34,32 @@ type
     BalancaMapadata_pes: TDateTimeField;
     BalancaMapacod_matur: TWideStringField;
     BalancaMapatempo: TIntegerField;
+    CamarasDetalhebanda: TWideStringField;
+    Acompanha: TZQuery;
+    Acompanharestam: TFloatField;
+    Acompanhaqtdlote: TFloatField;
+    Acompanhaqtdabate: TFloatField;
+    QuantidadesAbate: TZQuery;
+    QuantidadesLote: TZQuery;
+    QuantidadesAbaterastr: TWideStringField;
+    QuantidadesAbatequant: TIntegerField;
+    QuantidadesLotenum_lote: TWideStringField;
+    QuantidadesLoterastr: TWideStringField;
+    QuantidadesLotequant: TIntegerField;
+    EscalaAbate: TZQuery;
+    EscalaAbatelote: TWideStringField;
+    EscalaAbateseq_lote: TWideStringField;
+    EscalaAbatequant_lote: TFloatField;
+    EscalaAbatecurrais: TWideStringField;
+    EscalaAbatenome: TWideStringField;
+    EscalaAbatenome_fazenda: TWideStringField;
+    EscalaAbatehabilitacao: TWideStringField;
+    EscalaAbatestatus_lote: TWideStringField;
+    EscalaAbatebrincado: TWideStringField;
+    qryExecuta: TZQuery;
+    AbatesPecuarista: TZQuery;
+    AbatesPecuaristadata_abate: TDateTimeField;
+    AbatesPecuaristaquant: TFloatField;
   private
     { Private declarations }
   public

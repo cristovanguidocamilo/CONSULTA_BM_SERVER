@@ -512,7 +512,7 @@ object DMDados: TDMDados
         'rim('#39'-'#39'+class_rastr3), rtrim('#39'-'#39'+class_rastr4), rtrim('#39'-'#39'+class_' +
         'rastr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39')'
       ' )t'
-      ' order by t.rastr'
+      ' order by t.quant desc'
       '')
     Params = <>
     Left = 32
@@ -531,6 +531,7 @@ object DMDados: TDMDados
     Connection = CONEXAO
     SQL.Strings = (
       'declare @data datetime = cast(getdate() as date)'
+      'declare @num_lote varchar(2) = :num_lote'
       ''
       
         'select t.num_lote, case when (substring(t.rastr,len(t.rastr),1))' +
@@ -548,6 +549,9 @@ object DMDados: TDMDados
       '  from t_pescarcaca'
       ' where data_abate = @data'
       
+        '   and num_lote = case when @num_lote = '#39'00'#39' then num_lote else ' +
+        '@num_lote end'
+      
         ' group by num_lote, replace(concat(rtrim(case when class_rastr =' +
         ' '#39'DIF'#39' and status = '#39'T'#39' then '#39'T.F.'#39' when class_rastr = '#39'DIF'#39' and' +
         ' status = '#39'O'#39' then '#39'CONSERVA'#39' when class_rastr = '#39'DIF'#39' and statu' +
@@ -556,9 +560,20 @@ object DMDados: TDMDados
         #39'-'#39'+class_rastr5), rtrim('#39'-'#39'+class_rastr6)),'#39'--'#39','#39#39')'
       ' )t'
       ' order by t.num_lote')
-    Params = <>
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'num_lote'
+        ParamType = ptUnknown
+      end>
     Left = 128
     Top = 8
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'num_lote'
+        ParamType = ptUnknown
+      end>
     object QuantidadesLotenum_lote: TWideStringField
       FieldName = 'num_lote'
       ReadOnly = True
@@ -587,16 +602,28 @@ object DMDados: TDMDados
       #9'     faz.nome_fazenda,'
       
         '       case when prog.quant_abatido > 0 and prog.quant_abatido <' +
-        ' prog.quant_lote then '#39'1'#39' when prog.quant_abatido = 0 then '#39'0'#39' w' +
-        'hen prog.quant_abatido = prog.quant_lote then '#39'2'#39' end as status_' +
-        'lote,'
+        ' prog.quant_lote then '#39'Em Abate'#39' when prog.quant_abatido = 0 the' +
+        'n '#39'Aguardando Abate'#39' when prog.quant_abatido >= prog.quant_lote ' +
+        'then '#39'Finalizado'#39' end as status_lote,'
       
         #9'     rtrim(prog.class_rastr) + '#39'/'#39' + prog.subtipos_relatorio as' +
-        ' habilitacao'
-      '  from t_pedprogit prog'
-      ' inner join t_pedcompbov ped on ped.cod_pedcom = prog.cod_pedcom'
-      ' inner join t_fazenda faz on faz.cod_faz = ped.cod_faz'
-      ' inner join t_empresa emp on emp.cod_emp = ped.cod_emp'
+        ' habilitacao,'
+      
+        #9#9' case when ras.num_lote is not null then '#39'S'#39' else '#39'N'#39' end as b' +
+        'rincado'
+      '  from t_pedprogit prog with (nolock)'
+      
+        ' inner join t_pedcompbov ped with (nolock) on ped.cod_pedcom = p' +
+        'rog.cod_pedcom'
+      
+        ' inner join t_fazenda faz with (nolock) on faz.cod_faz = ped.cod' +
+        '_faz'
+      
+        ' inner join t_empresa emp with (nolock) on emp.cod_emp = ped.cod' +
+        '_emp'
+      
+        ' outer apply (select top 1  * from t_rastrea_dia with (nolock) w' +
+        'here data = @data and num_lote = prog.lote) ras'
       ' where prog.data_abate = @data'
       ' order by lote, seq_lote')
     Params = <>
@@ -638,6 +665,58 @@ object DMDados: TDMDados
       FieldName = 'habilitacao'
       ReadOnly = True
       Size = 59
+    end
+    object EscalaAbatebrincado: TWideStringField
+      FieldName = 'brincado'
+      ReadOnly = True
+      Size = 1
+    end
+  end
+  object qryExecuta: TZQuery
+    Connection = CONEXAO
+    Params = <>
+    Left = 504
+    Top = 8
+  end
+  object AbatesPecuarista: TZQuery
+    Connection = CONEXAO
+    SQL.Strings = (
+      'declare @cgc varchar(20) = :cgc'
+      ''
+      'select prog.data_abate,'
+      '       emp.nome,'
+      '       sum(prog.quant_lote) as quant'
+      '  from t_pedprogit prog with (nolock)'
+      
+        ' inner join t_pedcompbov ped with (nolock) on ped.cod_pedcom = p' +
+        'rog.cod_pedcom'
+      
+        ' inner join t_empresa emp with (nolock) on emp.cod_emp = ped.cod' +
+        '_emp'
+      ' where emp.cgc = @cgc'
+      '   and prog.data_abate >= (getdate() - 30)'
+      ' group by prog.data_abate, emp.nome'
+      ' order by prog.data_abate desc')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'cgc'
+        ParamType = ptUnknown
+      end>
+    Left = 128
+    Top = 128
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'cgc'
+        ParamType = ptUnknown
+      end>
+    object AbatesPecuaristadata_abate: TDateTimeField
+      FieldName = 'data_abate'
+    end
+    object AbatesPecuaristaquant: TFloatField
+      FieldName = 'quant'
+      ReadOnly = True
     end
   end
 end
