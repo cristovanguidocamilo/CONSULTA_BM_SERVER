@@ -69,6 +69,9 @@ begin
       JObj.AddPair('dataAbate',Dados.AbatesPecuaristadata_abate.AsString);
       JObj.AddPair('nome',Dados.AbatesPecuaristanome.AsString);
       JObj.AddPair('quant',Dados.AbatesPecuaristaquant.AsString);
+      JObj.AddPair('status',Dados.AbatesPecuaristastatus.AsString);
+      JObj.AddPair('pesoAbatido',Dados.AbatesPecuaristapeso_abatido.AsString);
+      JObj.AddPair('lote',Dados.AbatesPecuaristalote.AsString);
       JsonArray.Add(JObj);
       Dados.AbatesPecuarista.Next;
     end;

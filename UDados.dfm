@@ -683,8 +683,18 @@ object DMDados: TDMDados
     SQL.Strings = (
       'declare @cgc varchar(20) = :cgc'
       ''
-      'select prog.data_abate,'
+      'select'
+      '       prog.data_abate,'
       '       emp.nome,'
+      
+        #9'     cast(prog.lote as varchar) + '#39'-'#39' + cast(prog.seq_lote as v' +
+        'archar) as lote,'
+      #9'     prog.peso_abatido,'
+      
+        #9'     case when prog.quant_abatido = 0 then '#39'Aguardando Abate...' +
+        #39' when prog.quant_abatido > 0 and prog.quant_abatido < prog.quan' +
+        't_lote then '#39'Em Abate...'#39' when prog.quant_abatido >= prog.quant_' +
+        'lote then '#39'Finalizado.'#39' end as status,'
       '       sum(prog.quant_lote) as quant'
       '  from t_pedprogit prog with (nolock)'
       
@@ -694,8 +704,13 @@ object DMDados: TDMDados
         ' inner join t_empresa emp with (nolock) on emp.cod_emp = ped.cod' +
         '_emp'
       ' where emp.cgc = @cgc'
-      '   and prog.data_abate >= (getdate() - 30)'
-      ' group by prog.data_abate, emp.nome'
+      
+        ' group by prog.data_abate, emp.nome, case when prog.quant_abatid' +
+        'o = 0 then '#39'Aguardando Abate...'#39' when prog.quant_abatido > 0 and' +
+        ' prog.quant_abatido < prog.quant_lote then '#39'Em Abate...'#39' when pr' +
+        'og.quant_abatido >= prog.quant_lote then '#39'Finalizado.'#39' end, cast' +
+        '(prog.lote as varchar) + '#39'-'#39' + cast(prog.seq_lote as varchar), p' +
+        'rog.peso_abatido'
       ' order by prog.data_abate desc')
     Params = <
       item
@@ -722,6 +737,19 @@ object DMDados: TDMDados
     object AbatesPecuaristaquant: TFloatField
       FieldName = 'quant'
       ReadOnly = True
+    end
+    object AbatesPecuaristastatus: TWideStringField
+      FieldName = 'status'
+      ReadOnly = True
+      Size = 19
+    end
+    object AbatesPecuaristalote: TWideStringField
+      FieldName = 'lote'
+      ReadOnly = True
+      Size = 61
+    end
+    object AbatesPecuaristapeso_abatido: TFloatField
+      FieldName = 'peso_abatido'
     end
   end
 end

@@ -184,15 +184,25 @@ type TAbatesPecuarista = class
     FDataAbate: String;
     FQuant: String;
     FNome: String;
+    FStatus: String;
+    FLote: String;
+    FPesoAbatido: String;
 
     procedure SetDataAbate(const Value: String);
     procedure SetQuant(const Value: String);
     procedure SetNome(const Value: String);
+    procedure SetStatus(const Value: String);
+    procedure SetLote(const Value: String);
+    procedure SetPesoAbatido(const Value: String);
+
 
   published
     property DataAbate: String read FDataAbate write SetDataAbate;
     property Quant: String read FQuant write SetQuant;
     property Nome: String read FNome write SetNome;
+    property Status: String read FStatus write SetStatus;
+    property Lote: String read FLote write SetLote;
+    property PesoAbatido: String read FPesoAbatido write SetPesoAbatido;
 end;
 
 implementation
@@ -420,14 +430,29 @@ begin
   FDataAbate := Value;
 end;
 
+procedure TAbatesPecuarista.SetLote(const Value: String);
+begin
+  FLote := Value;
+end;
+
 procedure TAbatesPecuarista.SetNome(const Value: String);
 begin
   FNome := Value;
 end;
 
+procedure TAbatesPecuarista.SetPesoAbatido(const Value: String);
+begin
+  FPesoAbatido := Value;
+end;
+
 procedure TAbatesPecuarista.SetQuant(const Value: String);
 begin
   FQuant := Value;
+end;
+
+procedure TAbatesPecuarista.SetStatus(const Value: String);
+begin
+  FStatus := Value;
 end;
 
 end.

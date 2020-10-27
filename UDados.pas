@@ -61,6 +61,9 @@ type
     AbatesPecuaristadata_abate: TDateTimeField;
     AbatesPecuaristaquant: TFloatField;
     AbatesPecuaristanome: TWideStringField;
+    AbatesPecuaristastatus: TWideStringField;
+    AbatesPecuaristalote: TWideStringField;
+    AbatesPecuaristapeso_abatido: TFloatField;
   private
     { Private declarations }
   public
